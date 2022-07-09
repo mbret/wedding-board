@@ -8,9 +8,9 @@ const isInitialized = !!global.firebaseInitialized;
 if (!isInitialized) {
   firebaseAdmin.initializeApp({
     credential: firebaseAdmin.cert({
-      clientEmail: process.env.GOOGLE_CLIENT_EMAIL,
-      privateKey: `${process.env.GOOGLE_PRIVATE_KEY}`,
-      projectId: process.env.GOOGLE_PROJECT_ID,
+      clientEmail: process.env.APP_GOOGLE_CLIENT_EMAIL,
+      privateKey: `${process.env.APP_GOOGLE_PRIVATE_KEY}`,
+      projectId: process.env.APP_GOOGLE_PROJECT_ID,
     }),
   });
 }

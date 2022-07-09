@@ -15,8 +15,8 @@ export default async function handler(
 ) {
   aws.config.update({
     region: "us-east-1",
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET,
+    accessKeyId: process.env.APP_AWS_ACCESS_KEY,
+    secretAccessKey: process.env.APP_AWS_SECRET,
   });
 
   const s3 = new aws.S3({
