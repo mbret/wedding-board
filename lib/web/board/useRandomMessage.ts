@@ -32,7 +32,7 @@ export const useRandomMessage = () => {
     if (visible) {
       setMessage(
         messagesRef.current[
-          getRandomNumberBetween(0, messagesRef.current.length)
+          getRandomNumberBetween(0, messagesRef.current.length - 1)
         ]
       );
     } else {

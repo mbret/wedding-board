@@ -19,7 +19,7 @@ export const useMessages = () => {
       (snapshot) => {
         const messages = snapshot.docs.map((doc) => doc.data()) as Message[];
 
-        setMessages(messages);
+        setMessages(messages.filter(message => message.message || message.file));
       }
     );
 
