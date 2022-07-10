@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useMeasure } from "react-use";
 import { truncate } from "../truncate";
 import { useRandomMessage } from "./useRandomMessage";
@@ -15,44 +15,126 @@ const animations = [
   `animate__rubberBand`,
 ];
 
-const ImageMessage = ({
-  name,
-  file,
-  message,
-  maxHeight,
-}: {
-  name: string;
-  file?: string;
-  message?: string;
-  maxHeight: number;
-}) => {
-  const [ref, { height }] = useMeasure();
+const ImageMessage = memo(
+  ({
+    name,
+    file,
+    message,
+    maxHeight,
+  }: {
+    name: string;
+    file?: string;
+    message?: string;
+    maxHeight: number;
+  }) => {
+    const [ref, { height }] = useMeasure();
+    const element = useRef<HTMLDivElement | undefined>(undefined);
+    const transform =
+      height > maxHeight ? `scale(${maxHeight / height})` : undefined;
 
-  if (!file) return null;
+    // I hate this !!!
+    useEffect(() => {
+      if (element.current) {
+        element.current.style.opacity = `0`;
 
-  return (
-    <div
-      ref={ref as any}
-      style={{
-        border: `5px solid white`,
-        backgroundColor: `white`,
-        borderRadius: `3%`,
-        ...(height > maxHeight && {
-          transform: `scale(${maxHeight / height})`,
-        }),
-      }}
-    >
-      <picture>
-        <img src={file} alt={file} />
-      </picture>
+        setTimeout(() => {
+          if (element.current) {
+            element.current.style.opacity = `1`;
+          }
+        }, 10);
+      }
+    }, [name, file, message, maxHeight]);
+
+    if (!file) return null;
+
+    return (
       <div
+        ref={(_ref: any) => {
+          ref(_ref) as any;
+          element.current = _ref ?? undefined;
+        }}
         style={{
-          marginTop: 5,
-          paddingLeft: 2,
-          paddingRight: 2,
+          border: `5px solid white`,
+          backgroundColor: `white`,
+          borderRadius: `3%`,
+          transform,
         }}
       >
-        {!!message && truncate(message, 100)}
+        <picture>
+          <img src={file} alt={file} />
+        </picture>
+        <div
+          style={{
+            marginTop: 5,
+            paddingLeft: 2,
+            paddingRight: 2,
+          }}
+        >
+          {!!message && truncate(message, 100)}
+          <div
+            style={{
+              ...(message && {
+                marginTop: 8,
+              }),
+              textAlign: `right`,
+            }}
+          >
+            {name}
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+
+ImageMessage.displayName = `ImageMessage`;
+
+const TextMessage = memo(
+  ({
+    name,
+    message,
+    maxHeight,
+  }: {
+    name: string;
+    message?: string;
+    maxHeight: number;
+  }) => {
+    const [ref, { height }] = useMeasure();
+    const element = useRef<HTMLDivElement | undefined>(undefined);
+
+    // I hate this !!!
+    useEffect(() => {
+      if (element.current) {
+        element.current.style.opacity = `0`;
+
+        setTimeout(() => {
+          if (element.current) {
+            element.current.style.opacity = `1`;
+          }
+        }, 10);
+      }
+    }, [name, message, maxHeight]);
+
+    if (!message) return null;
+
+    return (
+      <div
+        ref={(_ref: any) => {
+          ref(_ref) as any;
+          element.current = _ref ?? undefined;
+        }}
+        style={{
+          width: `100%`,
+          border: `5px solid white`,
+          backgroundColor: `white`,
+          borderRadius: `5px`,
+          padding: 5,
+          ...(height > maxHeight && {
+            transform: `scale(${maxHeight / height})`,
+          }),
+        }}
+      >
+        {message}
         <div
           style={{
             ...(message && {
@@ -64,58 +146,15 @@ const ImageMessage = ({
           {name}
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
-const TextMessage = ({
-  name,
-  file,
-  message,
-  maxHeight,
-}: {
-  name: string;
-  file?: string;
-  message?: string;
-  maxHeight: number;
-}) => {
-  const [ref, { height }] = useMeasure();
+TextMessage.displayName = `TextMessage`;
 
-  if (!message) return null;
-
-  return (
-    <div
-      ref={ref as any}
-      style={{
-        width: `100%`,
-        border: `5px solid white`,
-        backgroundColor: `white`,
-        borderRadius: `5px`,
-        padding: 5,
-        ...(height > maxHeight && {
-          transform: `scale(${maxHeight / height})`,
-        }),
-      }}
-    >
-      {message}
-      <div
-        style={{
-          ...(message && {
-            marginTop: 8,
-          }),
-          textAlign: `right`,
-        }}
-      >
-        {name}
-      </div>
-    </div>
-  );
-};
-
-export const Item = () => {
+export const Item = memo(() => {
   const { message, visible } = useRandomMessage();
   const [ref, { height }] = useMeasure();
-
   const rotate = useMemo(() => getRandomNumberBetween(-5, 5), [message]);
   const className = useMemo(
     () =>
@@ -156,4 +195,6 @@ export const Item = () => {
       </div>
     </div>
   );
-};
+});
+
+Item.displayName = `Item`;
