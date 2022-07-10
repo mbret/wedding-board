@@ -60,6 +60,7 @@ const Send: NextPage = () => {
       </Head>
 
       <main>
+        <Box paddingY={10}>
         <Formik
           initialValues={{ name: ``, file: undefined, message: `` }}
           onSubmit={(values, actions) => {
@@ -157,6 +158,7 @@ const Send: NextPage = () => {
             </Form>
           )}
         </Formik>
+        </Box>
       </main>
     </div>
   );

@@ -155,7 +155,7 @@ TextMessage.displayName = `TextMessage`;
 export const Item = memo(() => {
   const { message, visible } = useRandomMessage();
   const [ref, { height }] = useMeasure();
-  const rotate = useMemo(() => getRandomNumberBetween(-5, 5), [message]);
+  const rotate = useMemo(() => getRandomNumberBetween(-10, 10), [message]);
   const className = useMemo(
     () =>
       visible
