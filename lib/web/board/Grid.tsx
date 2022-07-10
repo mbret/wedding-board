@@ -1,6 +1,7 @@
 import { Item } from "./Item";
-import { useMessages } from "./useMessages";
-import 'animate.css'
+import "animate.css";
+import { QrCodeItem } from "./QrCodeItem";
+import { Fragment } from "react";
 
 export const Grid = () => {
   const matrix = [4, 5];
@@ -14,14 +15,16 @@ export const Grid = () => {
         gridTemplateColumns: `repeat(${matrix[0]}, 1fr)`,
         gridTemplateRows: `repeat(${matrix[1]}, minmax(0, 1fr))`,
         backgroundColor: `#fcc9db`,
-        overflow: `hidden`
+        overflow: `hidden`,
       }}
     >
       {Array.from({ length: matrix[0] * matrix[1] }).map((_, i) => (
-        <Item key={i} />
+        <Fragment key={i}>
+          {i === matrix[0] - 1 ? <QrCodeItem /> : <Item />}
+        </Fragment>
       ))}
     </div>
   );
 };
 
-export default Grid
+export default Grid;
