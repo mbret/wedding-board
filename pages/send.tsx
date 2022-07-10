@@ -6,6 +6,7 @@ import {
   FormHelperText,
   FormLabel,
   Input,
+  Textarea,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { Field, Form, Formik } from "formik";
@@ -17,18 +18,21 @@ import styles from "../styles/Home.module.css";
 
 const Send: NextPage = () => {
   const { mutate: sendData } = useMutation(
-    async ({ file, name }: { name: string; file?: File }) => {
+    async ({ file, name, message }: { name: string; file?: File, message?: string }) => {
       const formData = new FormData();
 
-      formData.append(`name`, name)
+      formData.append(`name`, name);
       if (file) {
-        formData.append("file", file, file.name)
+        formData.append("file", file, file.name);
+      }
+      if (message) {
+        formData.append("message", message);
       }
 
-      return axios.post("/api/send", formData, {
+      return axios.post<{}>("/api/send", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
     }
   );
@@ -41,6 +45,14 @@ const Send: NextPage = () => {
     return error;
   }
 
+  function validateMessage(value: string) {
+    let error;
+    // if (!value) {
+    //   error = "Ton nom est requis";
+    // }
+    return error;
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -49,13 +61,13 @@ const Send: NextPage = () => {
 
       <main>
         <Formik
-          initialValues={{ name: ``, file: undefined }}
+          initialValues={{ name: ``, file: undefined, message: `` }}
           onSubmit={(values, actions) => {
             actions.setSubmitting(false);
 
             console.log(values);
 
-            sendData({ file: values.file, name: values.name });
+            sendData({ file: values.file, name: values.name, message: values.message });
           }}
         >
           {(props) => (
@@ -66,7 +78,7 @@ const Send: NextPage = () => {
                     <FormControl
                       isInvalid={form.errors.name && form.touched.name}
                     >
-                      <FormLabel htmlFor="name">Ton nom</FormLabel>
+                      <FormLabel htmlFor="name">Nom</FormLabel>
                       <Input {...field} id="name" placeholder="" size="lg" />
                       <FormHelperText>
                         Affiché en signature du message
@@ -76,10 +88,26 @@ const Send: NextPage = () => {
                   )}
                 </Field>
               </Box>
+              <Box marginBottom={8}>
+                <Field name="message" validate={validateMessage}>
+                  {({ field, form }: any) => (
+                    <FormControl
+                      isInvalid={form.errors.message && form.touched.message}
+                    >
+                      <FormLabel htmlFor="message">Message</FormLabel>
+                      <Textarea {...field} id="message" placeholder="" size="lg" />
+                      <FormHelperText>
+                        Tu peux ajouter une image avec ton message si tu le souhaites
+                      </FormHelperText>
+                      <FormErrorMessage>{form.errors.message}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
+              </Box>
               <Field name="file">
                 {({ form }: any) => (
                   <FormControl>
-                    <FormLabel htmlFor="name">(optionnel) Photo</FormLabel>
+                    <FormLabel htmlFor="name">Image</FormLabel>
                     <Dropzone
                       onDrop={(acceptedFiles) => {
                         form.setFieldValue(`file`, acceptedFiles[0]);
@@ -114,7 +142,7 @@ const Send: NextPage = () => {
                         </section>
                       )}
                     </Dropzone>
-                    <FormHelperText>Ajouter une photo</FormHelperText>
+                    <FormHelperText>Tu n es pas obligé d'ajouter un message avec une image</FormHelperText>
                   </FormControl>
                 )}
               </Field>

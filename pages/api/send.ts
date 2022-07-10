@@ -66,6 +66,7 @@ export default async function handler(
 
   await firestore.collection("messages").add({
     name: formidableData.fields.name,
+    message: formidableData.fields.message,
     createdAt: new Date(),
     file: fileKey ? `https://wedding-board.s3.eu-central-1.amazonaws.com/${fileKey}` : undefined,
   });
