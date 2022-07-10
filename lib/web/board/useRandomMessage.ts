@@ -21,7 +21,7 @@ export const useRandomMessage = () => {
         setVisible((value) => !value);
       },
       visible
-        ? getRandomNumberBetween(5000, 10000)
+        ? getRandomNumberBetween(8000, 15000)
         : getRandomNumberBetween(1000, 2000)
     );
 

@@ -11,7 +11,6 @@ function getRandomNumberBetween(min: number, max: number) {
 const animations = [
   `animate__heartBeat`,
   `animate__pulse`,
-  `animate__jello`,
   `animate__tada`,
   `animate__rubberBand`,
 ];
