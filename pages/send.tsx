@@ -142,7 +142,7 @@ const Send: NextPage = () => {
                         </section>
                       )}
                     </Dropzone>
-                    <FormHelperText>Tu n es pas obligé d'ajouter un message avec une image</FormHelperText>
+                    <FormHelperText>{`Tu n'es pas obligé d'ajouter un message avec une image`}</FormHelperText>
                   </FormControl>
                 )}
               </Field>
