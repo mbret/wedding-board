@@ -3,7 +3,7 @@ import { useMeasure } from "react-use";
 
 export const QrCodeItem = () => {
   const [ref, { height, width }] = useMeasure();
-  const url = `${window.origin}/board`;
+  const url = `${window.origin}/send`;
 
   return (
     <div
@@ -23,7 +23,7 @@ export const QrCodeItem = () => {
         }}
       >
         <QRCode
-          value={`${window.origin}/board`}
+          value={url}
           size={Math.min(height, width)}
         />
       </div>
