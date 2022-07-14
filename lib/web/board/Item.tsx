@@ -87,7 +87,6 @@ export const Item = memo(() => {
     }
   }, [visible, hasActiveMessage, reset]);
 
-  // console.log({ hasActiveMessage, visible, message });
   /**
    * Update opacity whenever the item is loaded / unload
    * we have to use a big delay to avoid transform glitch
