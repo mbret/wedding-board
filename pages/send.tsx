@@ -106,7 +106,7 @@ const Send: NextPage = () => {
 
               return (
                 <Form>
-                  <Box marginBottom={8}>
+                  <Box marginBottom={4}>
                     <Field name="name" validate={validateName}>
                       {({ field, form }: any) => (
                         <FormControl
@@ -131,7 +131,7 @@ const Send: NextPage = () => {
                       )}
                     </Field>
                   </Box>
-                  <Box marginBottom={8}>
+                  <Box marginBottom={4}>
                     <Field name="message" validate={validateMessage}>
                       {({ field, form }: any) => (
                         <FormControl
@@ -154,7 +154,7 @@ const Send: NextPage = () => {
                       )}
                     </Field>
                   </Box>
-                  <Box marginBottom={8}>
+                  <Box marginBottom={4}>
                     <FileField />
                   </Box>
                   {!!props.errors.error && props.submitCount > 0 && (
