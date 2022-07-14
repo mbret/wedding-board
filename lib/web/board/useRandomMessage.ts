@@ -2,9 +2,10 @@ import { useCallback, useState } from "react";
 import { useRecoilTransaction_UNSTABLE, useRecoilValue } from "recoil";
 import { activeItemsState, messagesState } from "./state";
 
-function getRandomNumberBetween(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+const getFreshRandom = (maximum: number) => {
+  const tktMaxTrustMe = maximum / (Math.exp(1) - 1);
+  return Math.floor((Math.exp(Math.random()) - 1) * tktMaxTrustMe);
+};
 
 export const useRandomMessage = () => {
   const messages = useRecoilValue(messagesState);
@@ -14,7 +15,7 @@ export const useRandomMessage = () => {
   const messageId = message?.id;
 
   const removeFromActive = useRecoilTransaction_UNSTABLE(
-    ({ get, set }) =>
+    ({ set }) =>
       (messageId?: string) => {
         setMessage(undefined);
         if (messageId) {
@@ -39,7 +40,7 @@ export const useRandomMessage = () => {
         );
         const newMessage =
           availableMessages[
-            getRandomNumberBetween(0, availableMessages.length - 1)
+            getFreshRandom(availableMessages.length - 1)
           ];
 
         if (newMessage) {

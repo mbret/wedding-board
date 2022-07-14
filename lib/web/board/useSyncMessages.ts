@@ -21,7 +21,9 @@ export const useSyncMessages = () => {
         }) as Message[];
 
         setMessagesState(
-          messages.filter((message) => message.message || message.file)
+          messages.filter((message) => message.message || message.file).sort((a, b) => {
+            return b.createdAt.nanoseconds - a.createdAt.nanoseconds
+          })
         );
       }
     );
