@@ -13,6 +13,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{}>
 ) {
+
   aws.config.update({
     region: "us-east-1",
     accessKeyId: process.env.APP_AWS_ACCESS_KEY,
@@ -70,34 +71,6 @@ export default async function handler(
     createdAt: new Date(),
     file: fileKey ? `https://wedding-board.s3.eu-central-1.amazonaws.com/${fileKey}` : undefined,
   });
-
-  //   try {
-  //     s3.getSignedUrl("putObject", s3Params, async (err, data) => {
-  //       if (err) {
-  //         return res.json({ success: false, error: err });
-  //       }
-  //       const returnData = {
-  //         signedRequest: data,
-  //         url: `https://wedding-board.s3.amazonaws.com/file/${fileName}`,
-  //       };
-  //       //   const imageUrl = await prisma.user.update({
-  //       //     where: {
-  //       //       email: session.user.email,
-  //       //     },
-  //       //     data: {
-  //       //       business: {
-  //       //         update: {
-  //       //           businessLogo: returnData.url,
-  //       //         },
-  //       //       },
-  //       //     },
-  //       //   });
-
-  //       return res.status(200).json(returnData);
-  //     });
-  //   } catch (err) {
-  //     return res.status(500).json({});
-  //   }
 
   return res.status(200).json({});
 }

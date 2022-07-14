@@ -6,84 +6,33 @@ import {
   FormHelperText,
   FormLabel,
   Input,
-  Textarea,
-  TextareaProps,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { Field, Form, Formik } from "formik";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Dropzone from "react-dropzone";
-import { useMutation } from "react-query";
-import styles from "../styles/Home.module.css";
 import { Text } from "@chakra-ui/react";
 import { Heading } from "@chakra-ui/react";
-import ResizeTextarea from "react-textarea-autosize";
-import React from "react";
+import React, { useState } from "react";
+import { useSend } from "../lib/web/send/useSend";
+import { AutoResizeTextarea } from "../lib/web/common/AutoResizeTextarea";
+import { useToast } from "@chakra-ui/react";
+import { FileField } from "../lib/web/send/FileField";
 
-const AutoResizeTextarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  (props, ref) => {
-    return (
-      <Textarea
-        minH="unset"
-        overflow="hidden"
-        w="100%"
-        resize="none"
-        ref={ref}
-        minRows={1}
-        as={ResizeTextarea}
-        {...props}
-      />
-    );
+function validateName(value: string) {
+  let error;
+  if (!value) {
+    error = "Ton nom est requis";
   }
-);
+  return error;
+}
 
-AutoResizeTextarea.displayName = `AutoResizeTextarea`;
+function validateMessage(value: string) {
+  return undefined;
+}
 
 const Send: NextPage = () => {
-  const { mutate: sendData } = useMutation(
-    async ({
-      file,
-      name,
-      message,
-    }: {
-      name: string;
-      file?: File;
-      message?: string;
-    }) => {
-      const formData = new FormData();
-
-      formData.append(`name`, name);
-      if (file) {
-        formData.append("file", file, file.name);
-      }
-      if (message) {
-        formData.append("message", message);
-      }
-
-      return axios.post<{}>("/api/send", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-    }
-  );
-
-  function validateName(value: string) {
-    let error;
-    if (!value) {
-      error = "Ton nom est requis";
-    }
-    return error;
-  }
-
-  function validateMessage(value: string) {
-    let error;
-    // if (!value) {
-    //   error = "Ton nom est requis";
-    // }
-    return error;
-  }
+  const { mutate: sendData } = useSend();
+  const toast = useToast();
 
   return (
     <div
@@ -112,15 +61,37 @@ const Send: NextPage = () => {
               error: ``,
             }}
             onSubmit={(values, actions) => {
-              actions.setSubmitting(false);
+              actions.setSubmitting(true);
 
               console.log(values);
 
-              sendData({
-                file: values.file,
-                name: values.name,
-                message: values.message,
-              });
+              sendData(
+                {
+                  file: values.file,
+                  name: values.name,
+                  message: values.message,
+                },
+                {
+                  onSettled: () => {
+                    actions.setSubmitting(false);
+                  },
+                  onSuccess: () => {
+                    actions.resetForm();
+                    toast({
+                      title: `Ton message a bien été envoyé`,
+                      status: `success`,
+                      isClosable: true,
+                    });
+                  },
+                  onError: () => {
+                    toast({
+                      title: `Une erreur est survenue, Merci de réessayer`,
+                      status: `error`,
+                      isClosable: true,
+                    });
+                  },
+                }
+              );
             }}
             validate={(values) => {
               if (!values.message && !values.file) {
@@ -141,6 +112,7 @@ const Send: NextPage = () => {
                         <FormControl
                           isInvalid={form.errors.name && form.touched.name}
                           isRequired
+                          isDisabled={form.isSubmitting}
                         >
                           <FormLabel htmlFor="name">Nom</FormLabel>
                           <Input
@@ -166,6 +138,7 @@ const Send: NextPage = () => {
                           isInvalid={
                             form.errors.message && form.touched.message
                           }
+                          isDisabled={form.isSubmitting}
                         >
                           <FormLabel htmlFor="message">Message</FormLabel>
                           <AutoResizeTextarea
@@ -182,47 +155,7 @@ const Send: NextPage = () => {
                     </Field>
                   </Box>
                   <Box marginBottom={8}>
-                    <Field name="file">
-                      {({ form }: any) => (
-                        <FormControl>
-                          <FormLabel htmlFor="name">Image</FormLabel>
-                          <Dropzone
-                            onDrop={(acceptedFiles) => {
-                              form.setFieldValue(`file`, acceptedFiles[0]);
-                              // console.log(fm)
-                              console.log(acceptedFiles);
-                            }}
-                          >
-                            {({ getRootProps, getInputProps }) => (
-                              <section className="container">
-                                <div
-                                  {...getRootProps({
-                                    style: {
-                                      flex: 1,
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      alignItems: "center",
-                                      padding: "20px",
-                                      borderWidth: 2,
-                                      borderRadius: 2,
-                                      borderColor: "#eeeeee",
-                                      borderStyle: "dashed",
-                                      backgroundColor: "#fafafa",
-                                      color: "#bdbdbd",
-                                      outline: "none",
-                                      transition: "border .24s ease-in-out",
-                                    },
-                                  })}
-                                >
-                                  <input {...getInputProps()} />
-                                  <p>Appuyer pour choisir un fichier</p>
-                                </div>
-                              </section>
-                            )}
-                          </Dropzone>
-                        </FormControl>
-                      )}
-                    </Field>
+                    <FileField />
                   </Box>
                   {!!props.errors.error && props.submitCount > 0 && (
                     <Text color="red.500" paddingY={2}>
@@ -231,8 +164,10 @@ const Send: NextPage = () => {
                   )}
                   <Button
                     mt={4}
-                    colorScheme="teal"
+                    width="100%"
+                    size="lg"
                     isLoading={props.isSubmitting}
+                    loadingText="Envoi en cours"
                     type="submit"
                   >
                     Envoyer
