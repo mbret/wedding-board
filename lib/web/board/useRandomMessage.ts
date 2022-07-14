@@ -1,44 +1,62 @@
-import { useEffect, useRef, useState } from "react";
-import { useMessages } from "./useMessages";
+import { useCallback, useState } from "react";
+import { useRecoilTransaction_UNSTABLE, useRecoilValue } from "recoil";
+import { activeItemsState, messagesState } from "./state";
 
 function getRandomNumberBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 export const useRandomMessage = () => {
-  const messages = useMessages();
-  const messagesRef = useRef(messages);
-  const [visible, setVisible] = useState(true);
+  const messages = useRecoilValue(messagesState);
   const [message, setMessage] = useState<typeof messages[number] | undefined>(
     undefined
   );
-  const hasMessages = messages.length > 0;
-  messagesRef.current = messages;
+  const messageId = message?.id;
 
-  useEffect(() => {
-    const timer = setTimeout(
-      () => {
-        setVisible((value) => !value);
+  const removeFromActive = useRecoilTransaction_UNSTABLE(
+    ({ get, set }) =>
+      (messageId?: string) => {
+        setMessage(undefined);
+        if (messageId) {
+          set(activeItemsState, (value) =>
+            value.filter((id) => id !== messageId)
+          );
+        }
       },
-      visible
-        ? getRandomNumberBetween(8000, 15000)
-        : getRandomNumberBetween(1000, 2000)
-    );
+    []
+  );
 
-    return () => clearTimeout(timer);
-  }, [visible]);
+  const updateMessage = useRecoilTransaction_UNSTABLE(
+    ({ get, set }) =>
+      (messageId?: string) => {
+        if (messageId) {
+          set(activeItemsState, (value) =>
+            value.filter((id) => id !== messageId)
+          );
+        }
+        const availableMessages = get(messagesState).filter(
+          ({ id }) => !get(activeItemsState).includes(id)
+        );
+        const newMessage =
+          availableMessages[
+            getRandomNumberBetween(0, availableMessages.length - 1)
+          ];
 
-  useEffect(() => {
-    if (visible) {
-      setMessage(
-        messagesRef.current[
-          getRandomNumberBetween(0, messagesRef.current.length - 1)
-        ]
-      );
-    } else {
-      // setMessage(undefined);
-    }
-  }, [visible, hasMessages]);
+        if (newMessage) {
+          set(activeItemsState, (value) => [...value, newMessage.id]);
+          setMessage(newMessage);
+        }
+      },
+    [removeFromActive]
+  );
 
-  return { message, visible };
+  const reset = useCallback(() => {
+    updateMessage(messageId);
+  }, [messageId, updateMessage]);
+
+  const clear = useCallback(() => {
+    removeFromActive(messageId);
+  }, [messageId, removeFromActive]);
+
+  return { message, clear, reset };
 };

@@ -1,16 +1,15 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
-import { useMessages } from "../lib/web/board/useMessages";
-import { Grid } from "../lib/web/board/Grid";
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
+import { useSyncMessages } from "../lib/web/board/useSyncMessages";
 
-const GridNoSSr = dynamic(
-  () => import('../lib/web/board/Grid'),
-  { ssr: false }
-)
+const GridNoSSr = dynamic(() => import("../lib/web/board/Grid"), {
+  ssr: false,
+});
 
-const Home: NextPage = () => {
+const Board: NextPage = () => {
+  useSyncMessages();
+
   return (
     <>
       <Head>
@@ -23,4 +22,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Board;

@@ -4,7 +4,7 @@ import { QrCodeItem } from "./QrCodeItem";
 import { Fragment } from "react";
 
 export const Grid = () => {
-  const matrix = [4, 5];
+  const matrix = [5, 5] as const;
 
   return (
     <div
@@ -14,7 +14,7 @@ export const Grid = () => {
         display: `grid`,
         gridTemplateColumns: `repeat(${matrix[0]}, 1fr)`,
         gridTemplateRows: `repeat(${matrix[1]}, minmax(0, 1fr))`,
-        backgroundColor: `#fcc9db`,
+        backgroundColor: `#a8cc3b`,
         overflow: `hidden`,
       }}
     >

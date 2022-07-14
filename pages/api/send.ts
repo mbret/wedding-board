@@ -24,8 +24,6 @@ export default async function handler(
     region: `eu-central-1`,
   });
 
-  //   console.log(req.body);
-
   const form = new formidable.IncomingForm();
 
   const formidableData = await new Promise<{
@@ -46,8 +44,6 @@ export default async function handler(
   const [file] = !Array.isArray(formidableData.files.file)
     ? [formidableData.files.file]
     : formidableData.files.file;
-
-  console.log(formidableData);
 
   const fileKey = file
     ? file.originalFilename
