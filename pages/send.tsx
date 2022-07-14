@@ -15,10 +15,20 @@ import Head from "next/head";
 import Dropzone from "react-dropzone";
 import { useMutation } from "react-query";
 import styles from "../styles/Home.module.css";
+import { Text } from "@chakra-ui/react";
+import { Heading } from "@chakra-ui/react";
 
 const Send: NextPage = () => {
   const { mutate: sendData } = useMutation(
-    async ({ file, name, message }: { name: string; file?: File, message?: string }) => {
+    async ({
+      file,
+      name,
+      message,
+    }: {
+      name: string;
+      file?: File;
+      message?: string;
+    }) => {
       const formData = new FormData();
 
       formData.append(`name`, name);
@@ -54,110 +64,126 @@ const Send: NextPage = () => {
   }
 
   return (
-    <div className={styles.container}>
+    <div style={{
+      padding: 8*2
+    }}>
       <Head>
         <title>Envoyer un message</title>
       </Head>
 
       <main>
-        <Box paddingY={10}>
-        <Formik
-          initialValues={{ name: ``, file: undefined, message: `` }}
-          onSubmit={(values, actions) => {
-            actions.setSubmitting(false);
+        <Heading as='h1' mb={2}>Envoyer un message</Heading>
+        <Text mb={4} fontSize="md">{`Utilise ce formulaire pour envoyer un message qui sera directement affiché sur la board. Tu peux envoyer un message avec du texte, du texte avec une photo ou une photo sans texte. Les meilleurs messages seront imprimés dans un livre d'or pour les mariés.`}</Text>
+        <Box >
+          <Formik
+            initialValues={{ name: ``, file: undefined, message: `` }}
+            onSubmit={(values, actions) => {
+              actions.setSubmitting(false);
 
-            console.log(values);
+              console.log(values);
 
-            sendData({ file: values.file, name: values.name, message: values.message });
-          }}
-        >
-          {(props) => (
-            <Form>
-              <Box marginBottom={8}>
-                <Field name="name" validate={validateName}>
-                  {({ field, form }: any) => (
-                    <FormControl
-                      isInvalid={form.errors.name && form.touched.name}
-                    >
-                      <FormLabel htmlFor="name">Nom</FormLabel>
-                      <Input {...field} id="name" placeholder="" size="lg" />
-                      <FormHelperText>
-                        Affiché en signature du message
-                      </FormHelperText>
-                      <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+              sendData({
+                file: values.file,
+                name: values.name,
+                message: values.message,
+              });
+            }}
+          >
+            {(props) => (
+              <Form>
+                <Box marginBottom={8}>
+                  <Field name="name" validate={validateName}>
+                    {({ field, form }: any) => (
+                      <FormControl
+                        isInvalid={form.errors.name && form.touched.name}
+                      >
+                        <FormLabel htmlFor="name">Nom</FormLabel>
+                        <Input {...field} id="name" placeholder="" size="lg" />
+                        <FormHelperText>
+                          Affiché en signature du message
+                        </FormHelperText>
+                        <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                </Box>
+                <Box marginBottom={8}>
+                  <Field name="message" validate={validateMessage}>
+                    {({ field, form }: any) => (
+                      <FormControl
+                        isInvalid={form.errors.message && form.touched.message}
+                      >
+                        <FormLabel htmlFor="message">Message</FormLabel>
+                        <Textarea
+                          {...field}
+                          id="message"
+                          placeholder=""
+                          size="lg"
+                        />
+                        <FormHelperText>
+                          Tu peux ajouter une image avec ton message si tu le
+                          souhaites
+                        </FormHelperText>
+                        <FormErrorMessage>
+                          {form.errors.message}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                </Box>
+                <Field name="file">
+                  {({ form }: any) => (
+                    <FormControl>
+                      <FormLabel htmlFor="name">Image</FormLabel>
+                      <Dropzone
+                        onDrop={(acceptedFiles) => {
+                          form.setFieldValue(`file`, acceptedFiles[0]);
+                          // console.log(fm)
+                          console.log(acceptedFiles);
+                        }}
+                      >
+                        {({ getRootProps, getInputProps }) => (
+                          <section className="container">
+                            <div
+                              {...getRootProps({
+                                style: {
+                                  flex: 1,
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "center",
+                                  padding: "20px",
+                                  borderWidth: 2,
+                                  borderRadius: 2,
+                                  borderColor: "#eeeeee",
+                                  borderStyle: "dashed",
+                                  backgroundColor: "#fafafa",
+                                  color: "#bdbdbd",
+                                  outline: "none",
+                                  transition: "border .24s ease-in-out",
+                                },
+                              })}
+                            >
+                              <input {...getInputProps()} />
+                              <p>Appuyer pour choisir un fichier</p>
+                            </div>
+                          </section>
+                        )}
+                      </Dropzone>
+                      <FormHelperText>{`Tu n'es pas obligé d'ajouter un message avec une image`}</FormHelperText>
                     </FormControl>
                   )}
                 </Field>
-              </Box>
-              <Box marginBottom={8}>
-                <Field name="message" validate={validateMessage}>
-                  {({ field, form }: any) => (
-                    <FormControl
-                      isInvalid={form.errors.message && form.touched.message}
-                    >
-                      <FormLabel htmlFor="message">Message</FormLabel>
-                      <Textarea {...field} id="message" placeholder="" size="lg" />
-                      <FormHelperText>
-                        Tu peux ajouter une image avec ton message si tu le souhaites
-                      </FormHelperText>
-                      <FormErrorMessage>{form.errors.message}</FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field>
-              </Box>
-              <Field name="file">
-                {({ form }: any) => (
-                  <FormControl>
-                    <FormLabel htmlFor="name">Image</FormLabel>
-                    <Dropzone
-                      onDrop={(acceptedFiles) => {
-                        form.setFieldValue(`file`, acceptedFiles[0]);
-                        // console.log(fm)
-                        console.log(acceptedFiles);
-                      }}
-                    >
-                      {({ getRootProps, getInputProps }) => (
-                        <section className="container">
-                          <div
-                            {...getRootProps({
-                              style: {
-                                flex: 1,
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                padding: "20px",
-                                borderWidth: 2,
-                                borderRadius: 2,
-                                borderColor: "#eeeeee",
-                                borderStyle: "dashed",
-                                backgroundColor: "#fafafa",
-                                color: "#bdbdbd",
-                                outline: "none",
-                                transition: "border .24s ease-in-out",
-                              },
-                            })}
-                          >
-                            <input {...getInputProps()} />
-                            <p>Appuyer pour choisir un fichier</p>
-                          </div>
-                        </section>
-                      )}
-                    </Dropzone>
-                    <FormHelperText>{`Tu n'es pas obligé d'ajouter un message avec une image`}</FormHelperText>
-                  </FormControl>
-                )}
-              </Field>
-              <Button
-                mt={4}
-                colorScheme="teal"
-                isLoading={props.isSubmitting}
-                type="submit"
-              >
-                Submit
-              </Button>
-            </Form>
-          )}
-        </Formik>
+                <Button
+                  mt={4}
+                  colorScheme="teal"
+                  isLoading={props.isSubmitting}
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              </Form>
+            )}
+          </Formik>
         </Box>
       </main>
     </div>
