@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRecoilTransaction_UNSTABLE, useRecoilValue } from "recoil";
 import { activeItemsState, messagesState } from "./state";
 
@@ -39,9 +39,7 @@ export const useRandomMessage = () => {
           ({ id }) => !get(activeItemsState).includes(id)
         );
         const newMessage =
-          availableMessages[
-            getFreshRandom(availableMessages.length - 1)
-          ];
+          availableMessages[getFreshRandom(availableMessages.length - 1)];
 
         if (newMessage) {
           set(activeItemsState, (value) => [...value, newMessage.id]);
@@ -58,6 +56,14 @@ export const useRandomMessage = () => {
   const clear = useCallback(() => {
     removeFromActive(messageId);
   }, [messageId, removeFromActive]);
+
+  useEffect(() => {
+    if (messageId) {
+      return () => {
+        clear();
+      };
+    }
+  }, [clear, messageId]);
 
   return { message, clear, reset };
 };

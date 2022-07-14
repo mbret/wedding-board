@@ -1,9 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
-import { useRecoilValue } from "recoil";
 import { MessageItem } from "./items/MessageItem";
 import { PhotoItem } from "./items/PhotoItem";
-import { activeItemsState } from "./state";
 import { useRandomMessage } from "./useRandomMessage";
 
 const ANIMATION_MINIMUM_DURATION = 1000;
