@@ -61,7 +61,7 @@ const FileControl = ({ isSubmitting }: { isSubmitting: boolean }) => {
               <input {...getInputProps()} />
               <p>Appuyer pour choisir un fichier</p>
             </div>
-            <FormHelperText>Seulement 1 fichier accepté</FormHelperText>
+            <FormHelperText>{`Seulement 1 fichier accepté. Attention, si tu n'a pas l'option pour prendre une photo, essai d'ouvrir l'application dans ton navigateur directement`}</FormHelperText>
             <aside
               style={{
                 paddingTop: 8,
