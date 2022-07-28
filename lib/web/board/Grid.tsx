@@ -4,7 +4,7 @@ import { QrCodeItem } from "./QrCodeItem";
 import { Fragment } from "react";
 
 export const Grid = () => {
-  const matrix = [5, 5] as const;
+  const matrix = [4, 3] as const;
 
   return (
     <div
